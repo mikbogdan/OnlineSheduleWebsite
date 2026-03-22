@@ -1,0 +1,136 @@
+.clients-header {
+  background-color: $_main-bg-color;
+  display: flex;
+  padding: 10px;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.clients {
+  padding: 10px 0 0;
+}
+
+.clients-header__btn {
+  cursor: pointer;
+  border: 0;
+  width: 120px;
+  height: 30px;
+  color: $_secondary-font-color;
+  font-weight: 400;
+  font-size: 12px;
+  transition: 0.3s;
+}
+
+.add__btn {
+  background-color: #499dd1;
+  transition: 0.3s;
+}
+
+.add__btn:hover {
+  background-color: #38779d;
+}
+
+.edit__btn {
+  background-color: #6db7e6;
+  transition: 0.3s;
+}
+
+.edit__btn:disabled {
+  cursor: not-allowed;
+}
+
+.edit__btn:hover {
+  background-color: #5a98bf;
+}
+
+.send__btn {
+  background-color: #6cd9c3;
+  transition: 0.3s;
+}
+
+.send__btn:hover {
+  background-color: #5ab5a2;
+}
+
+.report__btn {
+  background-color: #4fd1d3;
+  transition: 0.3s;
+}
+
+.report__btn:hover {
+  background-color: #41aeaf;
+}
+
+.other__btn {
+  background-color: #cecece;
+  transition: 0.3s;
+}
+
+.other__btn:hover {
+  background-color: #afaeae;
+}
+
+.filter__btn {
+  background-color: #48c2a9;
+  transition: 0.3s;
+}
+
+.filter__btn:hover {
+  background-color: #3b9f8b;
+}
+
+.white-triangle {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid $_secondary-font-color;
+}
+
+.clients-nav__filtred {
+  display: flex;
+  gap: 5px;
+}
+
+.clients-nav__filtred__elem button {
+  cursor: pointer;
+  border: 0;
+  color: #808383;
+  font-size: 13px;
+  font-weight: 400;
+  padding: 7px 20px;
+  background-color: #f3f3f4;
+  transition: 0.3s;
+}
+
+.clients-nav__filtred__elem button:hover {
+  background-color: #c6c6c87c;
+  transform: scale(1.05);
+}
+
+.clients-content {
+  background-color: $_main-bg-color;
+  width: 100%;
+}
+
+.active button {
+  background-color: #fff;
+  font-weight: 600;
+}
+
+.delete-teacher i {
+  cursor: pointer;
+  color: rgba(150, 2, 2, 0.6);
+}
+
+.table-tr:nth-child(odd) {
+  background-color: #efeeee6d;
+}
+
+.table-tr:hover {
+  background-color: #e6e3e375;
+}
+
+.selected-row {
+  background-color: #eae7e7;
+}

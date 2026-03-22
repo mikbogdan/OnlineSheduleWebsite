@@ -1,0 +1,338 @@
+.settings-part__nav {
+  width: 30%;
+  background-color: $_main-bg-color;
+  padding: 40px 30px;
+  border-right: 1px solid #7776766f;
+  nav {
+    ul {
+      :first-child {
+        font-size: 18px;
+        font-weight: 500;
+        margin-bottom: 8px;
+        pointer-events: none;
+      }
+      li {
+        transition: all 0.3s ease;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 400;
+        padding: 10px 7px;
+      }
+      :hover {
+        background-color: #d9d9d9;
+      }
+    }
+    margin-bottom: 30px;
+  }
+}
+
+.settings__elements li.active {
+  background: #d8d8d8;
+  color: #676767;
+  font-weight: 600;
+  border-left: 4px solid #676767;
+}
+
+.settings-part__content {
+  width: 100%;
+  background-color: $_main-bg-color;
+}
+
+#settings-part {
+  padding: 40px 15px;
+}
+
+.settings-part__active {
+  display: flex;
+}
+
+.settings-part__content__subjects {
+  padding: 45px 40px;
+  display: none;
+}
+
+.settings-part__content__subjects__active {
+  display: block;
+}
+
+.settings-part__content__title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 30px;
+}
+
+/* Панель инструментов */
+.settings-part__subjects__toolbar {
+  background: white;
+  padding: 15px 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.settings-part__subjects__search {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.settings-part__subjects__btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  background: #3498db;
+  color: white;
+  transition: 0.3s ease;
+}
+
+.settings-part__subjects__btn:hover {
+  background-color: #297cb4;
+}
+
+/* Список предметов */
+.settings-part__subjects__list {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.settings-part__subjects__item {
+  padding: 18px 20px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.settings-part__subjects__item:last-child {
+  border-bottom: none;
+}
+
+.settings-part__subjects__title-text {
+  flex: 1;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #2c3e50;
+}
+
+.settings-part__subjects__item-id {
+  color: #7f8c8d;
+  font-size: 14px;
+  margin-left: 8px;
+}
+
+.settings-part__subjects__actions {
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.settings-part__subjects__action-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ecf0f1;
+  transition: all 0.2s;
+}
+
+.settings-part__subjects__action-btn:hover {
+  background: #d5dbdb;
+  transform: translateY(-1px);
+}
+
+.settings-part__subjects__action-btn--edit {
+  color: #3498db;
+}
+.settings-part__subjects__action-btn--delete {
+  color: #e74c3c;
+}
+
+.toggle-switch {
+  align-self: center;
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 26px;
+  cursor: pointer;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #ccc;
+  border-radius: 34px;
+  transition: 0.3s;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 1px;
+  bottom: 2px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.3s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+input:checked + .toggle-slider {
+  background: #27ae60;
+}
+
+input:checked + .toggle-slider:before {
+  transform: translateX(16px);
+}
+
+//Модалка
+
+.settings-part__subjects-modal {
+  display: flex;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-part__subjects-modal--active {
+  display: flex;
+}
+
+.settings-part__subjects-modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  animation: modalShow 0.3s ease-out;
+}
+
+@keyframes modalShow {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.settings-part__subjects-modal-title {
+  margin: 0 0 20px 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.settings-part__subjects-modal-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.settings-part__subjects-modal-color {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.settings-part__subjects-modal-input__color {
+  width: 70px;
+  height: 30px;
+  margin-bottom: 20px;
+}
+
+#cabinetColorValue {
+  border: 0;
+  width: 50px;
+  height: 25px;
+  margin-left: 10px;
+  pointer-events: none;
+}
+
+.settings-part__subjects-modal-input:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+.settings-part__subjects-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.settings-part__subjects-modal-btn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.settings-part__subjects-modal-btn--save {
+  background: #3498db;
+  color: white;
+}
+
+.settings-part__subjects-modal-btn--cancel {
+  background: #95a5a6;
+  color: white;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.pagination button {
+  padding: 10px 16px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+}
+
+.pagination button.active {
+  background: #3498db;
+  color: white;
+  border-color: #3498db;
+}

@@ -1,0 +1,337 @@
+.filter-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.filter-modal {
+  background: white;
+  width: 580px;
+  max-width: 90%;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.filter-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #eee;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.filter-modal-close {
+  font-size: 28px;
+  cursor: pointer;
+  color: #999;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.filter-modal-close:hover {
+  background: #eee;
+}
+
+.filter-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.filter-group {
+  margin-bottom: 20px;
+}
+
+.filter-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+  font-size: 15px;
+}
+
+.filter-select,
+.filter-date-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.date-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.date-btn {
+  width: 36px;
+  height: 44px;
+  border: 1px solid #ddd;
+  background: #f8f9fa;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.date-btn:hover {
+  background: #eee;
+}
+
+.checkbox-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.checkbox-list label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.checkbox-list input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}
+
+.select-all {
+  color: #007bff;
+  font-size: 14px;
+  margin-bottom: 8px;
+  display: inline-block;
+}
+
+.filter-modal-footer {
+  padding: 20px 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  background: #f8f9fa;
+  border-top: 1px solid #eee;
+}
+
+.filter-btn {
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+.filter-btn-cancel {
+  background: #fff;
+  color: #666;
+  border: 1px solid #ddd;
+}
+
+.filter-btn-cancel:hover {
+  background: #f0f0f0;
+}
+
+.filter-btn-apply {
+  background: #5428d8;
+  color: white;
+}
+
+.filter-btn-apply:hover {
+  background: #441fb4;
+}
+
+// Контейнер отчёта
+#scheduleReportTable {
+  width: 100%;
+  margin: 40px 0;
+  padding: 24px;
+  background: #ffffff;
+}
+
+// Заголовок отчёта
+#scheduleReportTable h2 {
+  text-align: center;
+  margin: 0 0 32px 0;
+  color: #000000;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+#scheduleReportTable h2 span {
+  display: block;
+  margin-top: 8px;
+  font-size: 18px;
+  color: #666;
+  font-weight: normal;
+}
+
+// Таблица
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+// Заголовок дня (Понедельник, 22.12.2025)
+.day-header td {
+  padding: 20px 16px 12px 16px;
+  font-size: 34px;
+  font-weight: 600;
+  color: #000000;
+  border-bottom: 2px solid #e0e0e0;
+  background: #f8f9fa !important;
+}
+
+// Строки уроков
+.lesson-row {
+  background: #ffffff;
+  transition: background 0.2s;
+  padding: 20px 16px 12px 16px;
+}
+
+.lesson-row:hover {
+  background: #f0f8ff;
+}
+
+// Ячейки
+.report-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #eee;
+  vertical-align: top;
+}
+
+// Первая колонка — время
+.report-table td:first-child {
+  white-space: nowrap;
+  font-weight: 500;
+  color: #333;
+}
+
+// Класс/аудитория
+.report-table td:nth-child(2) {
+  min-width: 180px;
+}
+
+.report-table td:nth-child(2) small {
+  display: block;
+  margin-top: 4px;
+  color: #666;
+  font-size: 14px;
+}
+
+// Педагог
+.report-table td:nth-child(3) {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+// Предмет
+.report-table td:nth-child(4) {
+  color: #34495e;
+}
+
+// Комментарий
+.report-table td:nth-child(5) {
+  color: #555;
+  font-style: italic;
+}
+
+// Сообщение "Нет уроков"
+#scheduleReportTable .no-lessons {
+  text-align: center;
+  padding: 60px 20px;
+  color: #999;
+  font-style: italic;
+  font-size: 18px;
+}
+
+@media print {
+  /* Скрываем всё на странице */
+  body > * {
+    visibility: hidden;
+  }
+
+  /* Показываем только отчёт и его содержимое */
+  #scheduleReportTable,
+  #scheduleReportTable * {
+    visibility: visible !important;
+  }
+
+  /* Главное: позиционируем отчёт как блок, а не fixed */
+  #scheduleReportTable {
+    position: static !important; /* или просто убрать position */
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 20px !important; /* можно добавить отступы для красоты */
+    background: white !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* Скрываем кнопки управления */
+  #reportBackBtn,
+  #reportExcelBtn,
+  #reportPrintBtn {
+    display: none !important;
+  }
+
+  /* Убираем лишние элементы (если есть заголовок страницы, меню и т.д.) */
+  .schedule-container,
+  header,
+  nav,
+  footer,
+  aside {
+    display: none !important;
+  }
+
+  /* Таблица — чёткие границы для печати */
+  .report-table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  .report-table td,
+  .report-table th {
+    border: 1px solid #000 !important;
+    padding: 10px !important;
+    background: white !important;
+  }
+
+  /* Заголовки дней — жирные, без фона */
+  .day-header td {
+    background: white !important;
+    font-weight: bold;
+    font-size: 18px;
+    border-bottom: 2px solid #000 !important;
+  }
+
+  /* Убираем hover-эффекты и тени */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+}

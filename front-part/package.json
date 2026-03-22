@@ -1,0 +1,21 @@
+{
+  "name": "front-part",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "source": "src/index.html",
+  "scripts": {
+    "dev": "parcel src/index.html src/login.html src/register.html --open",
+    "build": "parcel build"
+  },
+  "dependencies": {
+    "concat": "^1.0.3",
+    "sass": "^1.94.0"
+  },
+  "devDependencies": {
+    "@parcel/transformer-sass": "^2.16.1",
+    "parcel": "^2.16.1"
+  }
+}

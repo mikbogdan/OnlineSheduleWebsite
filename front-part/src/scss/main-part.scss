@@ -1,0 +1,389 @@
+.main-part {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f3f3f4;
+  display: flex;
+  padding: 0 10px;
+  position: relative;
+}
+
+.sidebar {
+  width: 210px;
+  height: 100%;
+  background-color: #f3f3f4;
+}
+
+.sidebar nav {
+  width: 100%;
+}
+
+.sidebar__nav {
+  width: 100%;
+  padding: 10px 10px 10px 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sidebar__nav__item {
+  border: 1px solid transparent;
+  width: 100%;
+  cursor: pointer;
+  padding: 10px 5px;
+  transition: 0.3s;
+}
+
+.sidebar__nav__item a {
+  color: $_main-font-color;
+  font-weight: 400;
+  font-size: 15px;
+  width: 100%;
+  height: 100%;
+}
+
+.main-content {
+  display: none;
+  background-color: #f3f3f4;
+  flex-grow: 1;
+}
+
+.main-content__active {
+  display: block;
+}
+
+.sidebar__nav__item:hover {
+  border: 1px solid rgba(105, 105, 105, 0.7);
+  background-color: #dcdcdc;
+}
+
+.sidebar__nav__item__active {
+  background-color: $_main-font-color;
+  pointer-events: none;
+  a {
+    color: #fff;
+  }
+}
+
+.burger-active {
+  display: none;
+}
+
+.clients-content {
+  padding: 0px 17px 17px;
+}
+
+.bd-table {
+  width: 100%;
+  color: #3e86b3;
+  font-size: 14px;
+  font-weight: 400;
+  border-collapse: collapse;
+  th {
+    height: 50px;
+    border-bottom: 1px solid #c8c8ca84;
+  }
+  td {
+    text-align: center;
+    height: 50px;
+  }
+}
+
+.teachers-form {
+  background: #fff;
+  width: 90%;
+  max-width: 600px;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  animation: modalSlideUp 0.4s ease-out;
+}
+
+.teachers-form__non-active {
+  display: none;
+}
+
+.teachers-form__active {
+  display: block;
+}
+
+.clients-form {
+  background: #fff;
+  width: 90%;
+  max-width: 600px;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  animation: modalSlideUp 0.4s ease-out;
+}
+
+/* Шапка */
+.teachers-form__header {
+  background: #e3f2fd;
+  padding: 5px 24px;
+  font-size: 19px;
+  font-weight: 600;
+  color: #1565c0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.teachers-form__close {
+  font-size: 28px;
+  color: #666;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+.teachers-form__close:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #db0202;
+}
+
+/* Основная часть */
+.teachers-form__body {
+  padding: 8px 32px;
+  overflow-y: auto;
+  max-height: 90vh;
+}
+
+/* Общий блок поля */
+.teachers-form__field {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.teachers-form__field__sex {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 20px;
+}
+
+.teachers-form__field__alt {
+  display: flex;
+  justify-content: start;
+  gap: 70px;
+}
+
+.teachers-form__label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+.teachers-form__label span {
+  color: #d32f2f;
+}
+
+/* Инпуты */
+.teachers-form__input,
+.teachers-form__textarea,
+.teachers-form__select {
+  width: 80%;
+  padding: 7px 10px;
+  border: 1px solid #ddd;
+  background: #fafafa;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+/* Инпуты */
+.clients-form__input,
+.clients-form__textarea,
+.clients-form__select {
+  width: 80%;
+  padding: 7px 10px;
+  border: 1px solid #ddd;
+  background: #fafafa;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+.clients-form__input__type {
+  padding: 7px 10px;
+  border: 1px solid #ddd;
+  background: #fafafa;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+.clients-form__select {
+  width: 45%;
+  padding: 7px 10px;
+  border: 1px solid #ddd;
+  background: #fafafa;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+.clients-form__select__status {
+  width: 200px;
+  padding: 7px 10px;
+  border: 1px solid #ddd;
+  background: #fafafa;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+.clients-form__client-type {
+  display: flex;
+  justify-content: end;
+}
+
+.teachers-form__input__date {
+  width: 170px;
+}
+
+.teachers-form__input:focus,
+.teachers-form__textarea:focus,
+.teachers-form__select:focus {
+  outline: none;
+  border-color: #42a5f5;
+  background: #fff;
+}
+
+/* Горизонтальный ряд (дата + пол) */
+.teachers-form__row {
+  display: flex;
+  gap: 20px;
+  align-items: end;
+}
+.teachers-form__row > div {
+  flex: 1;
+}
+
+/* Пол */
+.teachers-form__gender {
+  display: flex;
+  gap: 12px;
+}
+.teachers-form__gender-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.teachers-form__gender-btn--active {
+  background: #bbdefb;
+  color: #1976d2;
+  box-shadow: 0 6px 20px rgba(25, 118, 210, 0.25);
+}
+
+/* Контакты */
+.teachers-form__contacts {
+  margin-bottom: 10px;
+}
+.teachers-form__contact-row {
+  display: grid;
+  grid-template-columns: 20px 1fr 120px 40px;
+  align-items: end;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 10px;
+  margin-bottom: 10px;
+  input {
+    width: 100%;
+  }
+  select {
+    width: 100%;
+  }
+}
+.teachers-form__contact-remove {
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: #e74c3c;
+  cursor: pointer;
+  width: 40px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+.teachers-form__contact-remove:hover {
+  background: #ffebee;
+}
+
+.clients-form__contacts {
+  margin-bottom: 10px;
+}
+.clients-form__contact-row {
+  display: grid;
+  grid-template-columns: 20px 1fr 120px 40px;
+  align-items: end;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 10px;
+  margin-bottom: 10px;
+  input {
+    width: 100%;
+  }
+  select {
+    width: 100%;
+  }
+}
+
+/* Чекбоксы филиалов */
+.teachers-form__checkboxes label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+  cursor: pointer;
+  font-weight: normal;
+}
+
+.clients-form__checkboxes label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+  cursor: pointer;
+  font-weight: normal;
+}
+
+/* Цвет */
+.teachers-form__color {
+  height: 48px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+/* Кнопки */
+.teachers-form__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+  padding: 20px 32px 32px;
+}
+.teachers-form__btn {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.teachers-form__btn--cancel {
+  background: #eee;
+  color: #555;
+}
+.teachers-form__btn--save {
+  background: #1976d2;
+  color: white;
+  box-shadow: 0 5px 15px rgba(25, 118, 210, 0.3);
+}

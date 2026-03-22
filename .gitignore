@@ -1,0 +1,52 @@
+# =========================
+# Dependencies
+# =========================
+node_modules/
+
+# =========================
+# Build outputs
+# =========================
+dist/
+build/
+.cache/
+.parcel-cache/
+
+# =========================
+# Logs
+# =========================
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+# Environment variables
+# =========================
+.env
+.env.local
+.env.*.local
+
+# =========================
+# OS files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Editor folders
+# =========================
+.vscode/
+.idea/
+
+# =========================
+# Parcel specific
+# =========================
+.parcel-cache/
+.cache/
+
+# =========================
+# Misc
+# =========================
+*.log
+*.tmp
+*.swp

@@ -1,0 +1,213 @@
+// Админ-панель пользователей
+#adminUsersSection {
+  padding: 28px;
+  background: #ffffff;
+
+  margin-bottom: 40px;
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: $_main-font-color;
+  padding-bottom: 12px;
+  text-align: center;
+}
+
+// .table-container {
+//   //   overflow-x: auto;
+// }
+
+.admin-users-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  background: transparent;
+
+  thead {
+    background: #f8f9fa;
+
+    th {
+      padding: 16px 24px;
+      font-weight: 600;
+      color: #495057;
+      text-align: left;
+      border-bottom: 2px solid #dee2e6;
+      font-size: 16px;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  tbody {
+    tr {
+      background: #ffffff;
+      transition: all 0.2s ease;
+    }
+
+    td {
+      padding: 15px 24px; // увеличенные отступы внутри ячеек
+      vertical-align: middle;
+      border: none;
+      border-bottom: 2px solid #dee2e6;
+      &:first-child {
+        padding-left: 32px; // небольшой отступ слева для логина
+      }
+    }
+  }
+  select {
+    padding: 10px 16px;
+    border: 1px solid #ced4da;
+    border-radius: 10px;
+    background: white;
+    font-size: 15px;
+    min-width: 180px;
+    cursor: pointer;
+
+    &:focus {
+      outline: none;
+      border-color: #297cb4;
+      box-shadow: 0 0 0 3px rgba(32, 201, 151, 0.15);
+    }
+  }
+  .save-user-btn {
+    padding: 10px 24px;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #297cb4;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(32, 201, 151, 0.3);
+    }
+  }
+}
+
+// Адаптивность
+@media (max-width: 768px) {
+  .admin-users-table {
+    font-size: 14px;
+
+    select[multiple] {
+      width: 100%;
+    }
+
+    .save-user-btn {
+      width: 100%;
+      padding: 12px;
+    }
+  }
+}
+
+.branches-cell {
+  max-width: 200px;
+}
+
+.custom-multiselect {
+  position: relative;
+  width: 100%;
+  font-size: 15px;
+}
+
+.multiselect-trigger {
+  padding: 12px 16px;
+  border: 1px solid #ced4da;
+  border-radius: 10px;
+  background: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #adb5bd;
+  }
+
+  &.active {
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(32, 201, 151, 0.15);
+  }
+}
+
+.multiselect-placeholder {
+  color: #868e96;
+}
+
+.multiselect-selected {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.multiselect-tag {
+  background: #e9f7f3;
+  color: #3498db;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.multiselect-arrow {
+  font-size: 14px;
+  color: #868e96;
+  transition: transform 0.2s ease;
+  &.open {
+    transform: rotate(180deg);
+  }
+}
+
+.multiselect-options {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ced4da;
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+
+  &.open {
+    display: block;
+  }
+
+  label {
+    display: block;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #f0f8ff;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 10px;
+    }
+  }
+}
+
+.crm__search-input {
+  width: 100%;
+  padding: 12px 16px;
+  margin-bottom: 24px;
+  border: 1px solid #ced4da;
+  border-radius: 10px;
+  font-size: 15px;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(32, 201, 151, 0.15);
+  }
+}
