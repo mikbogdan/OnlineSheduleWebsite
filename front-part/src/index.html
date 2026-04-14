@@ -132,14 +132,14 @@
       </aside>
       <div id="settings-part" class="main-content" data-target="settings">
         <div class="settings-part__nav">
-          <nav>
+          <!-- <nav>
             <ul class="settings__elements">
               <li>Базовые настройки</li>
               <li>Основные настройки</li>
               <li>Филиалы</li>
             </ul>
-          </nav>
-          <nav>
+          </nav> -->
+          <!-- <nav>
             <ul class="settings__elements">
               <li>Клиенты</li>
               <li>Статусы клиентов</li>
@@ -147,14 +147,14 @@
               <li>Причины пропуска уроков</li>
               <li>Кабинет клиента</li>
             </ul>
-          </nav>
+          </nav> -->
           <nav>
             <ul class="settings__elements">
               <li>Уроки</li>
               <li>Предметы</li>
-              <li>Типы уроков</li>
+              <!-- <li>Типы уроков</li>
               <li>Настройки уроков</li>
-              <li>Настройки календаря</li>
+              <li>Настройки календаря</li> -->
               <li>Аудитории</li>
             </ul>
           </nav>
@@ -491,15 +491,18 @@
                 <i class="fa-solid fa-print"></i> Отчёты
                 <div class="white-triangle"></div>
               </button>
-              <!-- <button class="clients-header__btn other__btn">
+              <button
+                id="calendarOtherBtn"
+                class="clients-header__btn other__btn"
+              >
                 <i class="fa-solid fa-ellipsis"></i> Другое
                 <div class="white-triangle"></div>
-              </button> -->
+              </button>
             </div>
             <div class="clients-header__right">
-              <!-- <button class="clients-header__btn filter__btn">
+              <button id="filterLessonsBtn" class="clients-header__btn filter__btn">
                 <i class="fa-solid fa-filter"></i> Фильтр
-              </button> -->
+              </button>
             </div>
           </div>
           <div class="clients-main">
@@ -510,6 +513,7 @@
                   <button class="nav-arrow nav-arrow--right">›</button>
                   <div class="schedule-period" id="schedulePeriod">Сегодня</div>
                   <div class="schedule-date-range" id="dateRange"></div>
+                  <button id="todayBtn" class="today-btn">Сегодня</button>
                   <div class="view-switch">
                     <button class="view-btn view-btn--active" data-view="week">
                       Неделя

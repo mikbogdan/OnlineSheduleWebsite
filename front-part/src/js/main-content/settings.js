@@ -86,7 +86,7 @@ async function loadSubjects(page = 1, search = "") {
     }
   } catch (err) {
     console.error(err);
-    alert("Нет связи с сервером");
+    // alert("Нет связи с сервером");
   }
 }
 
@@ -426,7 +426,7 @@ async function restBtns(e, modalTemplate, request) {
         alert("Не удалось загрузить данные предмета");
         return;
       }
-      if (request === "subject.php") {
+      if (request === "subjects.php") {
         const subject = result.data;
 
         // Открываем модалку
@@ -626,8 +626,13 @@ async function restBtns(e, modalTemplate, request) {
 
       if (result.success) {
         // Удаляем элемент из списка
-        deleteBtn.closest(".settings-part__subjects__item").remove();
-        alert("Запись удалена успешно!");
+        const item = deleteBtn.closest(
+          ".settings-part__cabinets__item, .settings-part__subjects__item",
+        );
+        if (item) {
+          item.remove();
+          alert("Запись удалена успешно!");
+        }
       } else {
         alert("Ошибка: " + result.message);
       }
@@ -684,9 +689,9 @@ function renderCabinets(cabinets) {
     const isActive = s.cabinet_active == "true";
 
     const item = document.createElement("div");
-    item.className = "settings-part__subjects__item";
+    item.className = "settings-part__cabinets__item";
     item.innerHTML = `
-      <div class="settings-part__subjects__title-text">
+      <div class="settings-part__cabinets__title-text">
         ${s.cabinet}
         <input type="color" class="settings-part__subjects__color" id="cabinetColorValue" value="${
           s.cabinet_color
@@ -797,11 +802,11 @@ const cabinetsList = document.getElementById("cabinetsList");
 searchInputCabinets.addEventListener("input", () => {
   const filterValue = searchInputCabinets.value.trim().toLowerCase();
 
-  const items = cabinetsList.querySelectorAll(".settings-part__subjects__item");
+  const items = cabinetsList.querySelectorAll(".settings-part__cabinets__item");
 
   items.forEach((item) => {
     const titleText = item
-      .querySelector(".settings-part__subjects__title-text")
+      .querySelector(".settings-part__cabinets__title-text")
       .textContent.toLowerCase();
 
     if (titleText.includes(filterValue)) {
@@ -817,7 +822,7 @@ const contentContainer = document.querySelector(".settings-part__content");
 const STORAGE_KEY = "activeSettingsTab";
 
 // Функция активации блока
-function activateTab(target) {
+function activateTabSettins(target) {
   // Снимаем active со всех
   contentContainer
     .querySelectorAll(".settings-part__content__subjects")
@@ -865,7 +870,7 @@ document.querySelector(".settings-part__nav").addEventListener("click", (e) => {
 
   if (!target) return;
 
-  activateTab(target);
+  activateTabSettins(target);
 
   // Подсветка активного пункта
   document.querySelectorAll(".settings__elements li").forEach((item) => {
@@ -879,7 +884,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const savedTab = localStorage.getItem(STORAGE_KEY) || ""; // дефолт — предметы
 
   // Активируем сохранённый таб
-  activateTab(savedTab);
+  activateTabSettins(savedTab);
 
   // Подсвечиваем пункт в меню
   const activeLi = Array.from(

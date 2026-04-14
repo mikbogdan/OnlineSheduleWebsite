@@ -1,4 +1,5 @@
 import { API_URL } from "../constants";
+import { userRole } from "../rolePermissions";
 
 const clientsTable = document.getElementById("tableClients");
 let selectedClientId = null;
@@ -75,18 +76,19 @@ function clientsTableAdd(item) {
     tableTr.appendChild(tableTd);
   });
 
-  // Кнопка удаления
   const delClientBtn = document.createElement("td");
   delClientBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
   delClientBtn.classList.add("delete-teacher");
   delClientBtn.dataset.id = item.client_ID;
-  tableTr.appendChild(delClientBtn);
+  // Кнопка удаления
+  if (userRole === "admin" || userRole === "superadmin") {
+    tableTr.appendChild(delClientBtn);
 
-  delClientBtn.addEventListener("click", (e) => {
-    e.stopPropagation(); // чтобы не срабатывал клик по строке
-    deleteClient(delClientBtn);
-  });
-
+    delClientBtn.addEventListener("click", (e) => {
+      e.stopPropagation(); // чтобы не срабатывал клик по строке
+      deleteClient(delClientBtn);
+    });
+  }
   clientsTable.appendChild(tableTr);
 }
 
@@ -144,7 +146,7 @@ export async function deleteClient(btn) {
           headers: {
             "Content-Type": "application/json;charset=utf-8",
           },
-        }
+        },
       );
 
       const result = await response.json();
@@ -442,8 +444,8 @@ function collectClientsData() {
   // Филиалы — строка через запятую
   const branchesArr = Array.from(
     document.querySelectorAll(
-      '.clients-form__checkboxes input[type="checkbox"]:checked'
-    )
+      '.clients-form__checkboxes input[type="checkbox"]:checked',
+    ),
   ).map((cb) => cb.parentElement.textContent.trim().replace(/\s+/g, " "));
 
   const branches = branchesArr.length ? branchesArr.join(", ") : null;
@@ -456,7 +458,7 @@ function collectClientsData() {
     const noteInput =
       row.querySelectorAll(".clients-form__input")[2] ||
       row.querySelector(
-        'input[placeholder*="Примечание"], input[placeholder*="примечание"]'
+        'input[placeholder*="Примечание"], input[placeholder*="примечание"]',
       );
 
     const value = valueInput?.value.trim();
@@ -495,7 +497,7 @@ const editClient = document.getElementById("editClient");
 editClient.addEventListener("click", async () => {
   try {
     const response = await fetch(
-      `${API_URL}/clients.php?id=${selectedClientId}`
+      `${API_URL}/clients.php?id=${selectedClientId}`,
     );
 
     const result = await response.json();

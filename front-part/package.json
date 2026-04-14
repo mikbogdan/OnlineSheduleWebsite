@@ -7,8 +7,8 @@
   "type": "commonjs",
   "source": "src/index.html",
   "scripts": {
-    "dev": "parcel src/index.html src/login.html src/register.html --open",
-    "build": "parcel build"
+    "build": "parcel build src/index.html src/login.html src/register.html --dist-dir ../public",
+    "dev": "parcel serve src/index.html src/login.html src/register.html"
   },
   "dependencies": {
     "concat": "^1.0.3",

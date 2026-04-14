@@ -24,7 +24,12 @@ if (!$user_id) {
 
 $config = require '../config/db.php';
 
-$pdo = new PDO("mysql:host={$config['host']};dbname={$config['dbname']};charset=utf8mb4", $config['username']);
+$pdo = new PDO(
+        "mysql:host={$config['host']};dbname={$config['dbname']};charset={$config['charset']}",
+        $config['username'],
+        $config['password'] ?? '',
+        $config['options'] ?? []
+    );
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 $stmt = $pdo->prepare("UPDATE users SET role = :role, branches = :branches, t_id = :teacher_id WHERE user_id = :id");

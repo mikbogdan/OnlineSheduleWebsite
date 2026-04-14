@@ -16,8 +16,10 @@ $config = require '../config/db.php';
 
 try {
     $pdo = new PDO(
-        "mysql:host={$config['host']};dbname={$config['dbname']};charset=utf8mb4",
-        $config['username']
+        "mysql:host={$config['host']};dbname={$config['dbname']};charset={$config['charset']}",
+        $config['username'],
+        $config['password'] ?? '',
+        $config['options'] ?? []
     );
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
@@ -102,7 +104,7 @@ try {
         $cabinet = trim($_POST['cabinet'] ?? '');
         $cabinet_color = $_POST['cabinet_color'] ?? '#10709f';
 
-        if (!$id || !is_numeric($id) || empty($cabinetц)) {
+        if (!$id || !is_numeric($id) || empty($cabinet)) {
             echo json_encode(['success' => false, 'message' => 'Неверные данные']);
             exit();
         }

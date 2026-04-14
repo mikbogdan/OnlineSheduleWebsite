@@ -9,7 +9,7 @@ import {
   fillTeacherFormForEdit,
 } from "./main-content/teachersForm.js";
 import {} from "./main-content/settings.js";
-import { loadLessons } from "./main-content/schedule.js";
+import { initSchedulePage } from "./main-content/schedule.js";
 import { loadClients } from "./main-content/clients.js";
 import { API_URL } from "./constants.js";
 import {} from "./main-content/report.js";
@@ -25,10 +25,10 @@ const tabLoaders = {
   // subjects: loadSubjects,
   // cabinets: loadCabinets,
   crm: loadAdminUsers(1),
-  lessons: loadLessons,
+  lessons: initSchedulePage,
 };
 
-function activateTab(target) {
+export function activateTab(target) {
   if (!target) return;
 
   const content = document.querySelector(
@@ -77,7 +77,7 @@ function activateTab(target) {
   // === КЛЮЧЕВОЕ: вызываем функцию загрузки данных для этой вкладки ===
   const loader = tabLoaders[target];
   if (loader && typeof loader === "function") {
-    console.log(`Загружаем данные для вкладки: ${target}`);
+    // console.log(`Загружаем данные для вкладки: ${target}`);
     loader(); // ← здесь вызывается нужная функция
   } else {
     console.warn(`Нет функции загрузки для вкладки: ${target}`);
@@ -89,19 +89,16 @@ function activateTab(target) {
 
 // Основной обработчик клика
 document.addEventListener("click", (e) => {
-  // Находим ближайший элемент с нужным классом или атрибутом
   const sidebarItem = e.target.closest(
-    ".sidebar__nav__item, .header-items__list__item, [data-target]",
+    ".sidebar__nav__item, .header-items__list__item",
   );
 
-  if (!sidebarItem) return; // клик не по нужному элементу
+  if (!sidebarItem) return;
 
-  // Предотвращаем дефолтное поведение только если элемент имеет data-target
   const target = sidebarItem.dataset.target;
   if (!target) return;
 
-  e.preventDefault(); // теперь безопасно
-
+  e.preventDefault();
   activateTab(target);
 });
 

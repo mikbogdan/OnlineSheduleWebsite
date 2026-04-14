@@ -1,7 +1,7 @@
 <?php
 // api/subjects.php
 
-// header('Access-Control-Allow-Origin: http://localhost:1234');
+header('Access-Control-Allow-Origin: http://localhost:1234');
 header('Access-Control-Allow-Credentials: true');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type');
@@ -18,7 +18,9 @@ $config = require '../config/db.php';
 try {
     $pdo = new PDO(
         "mysql:host={$config['host']};dbname={$config['dbname']};charset=utf8mb4",
-        $config['username']
+        $config['username'],
+        $config['password'] ?? '',
+        $config['options'] ?? []
     );
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 

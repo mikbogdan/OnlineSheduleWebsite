@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'host'     => 'localhost',
-    'dbname'   => 'promtehobraz',   
-    'username' => 'root',                 
-    // 'password' => 'root',               
+    'host'     => 'db',
+    'dbname'   => 'promtehobrazshedule',
+    'username' => 'root',
+    'password' => 'root',
     'charset'  => 'utf8mb4',
     'options'  => [
         PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,

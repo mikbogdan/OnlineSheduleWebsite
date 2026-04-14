@@ -14,6 +14,11 @@ const handleUserSearch = debounce((event) => {
 }, 500);
 
 export async function loadAdminUsers(page = 1, search = "") {
+  const searchInput = document.getElementById("userSearchInput");
+  if (searchInput) {
+    searchInput.addEventListener("input", handleUserSearch);
+  }
+
   currentPage = page;
   currentSearch = search;
 
@@ -294,16 +299,10 @@ function renderPagination() {
   pagination.appendChild(nextBtn);
 }
 
-// Привязка поиска и первичная загрузка
-document.getElementById("crm").addEventListener("DOMContentLoaded", () => {
-  const searchInput = document.getElementById("userSearchInput"); // добавь input id="userSearchInput"
-  if (searchInput) {
-    searchInput.addEventListener("input", handleUserSearch);
-  }
-
-  // Первичная загрузка
-  loadAdminUsers(1);
-});
+// document.getElementById("crm").addEventListener("DOMContentLoaded", () => {
+//   // Первичная загрузка
+//   loadAdminUsers(1);
+// });
 
 // Функция инициализации одного мультиселекта
 function initMultiselect(multiselect) {

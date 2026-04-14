@@ -12,7 +12,12 @@ if (!isset($_SESSION['user_id'])) {
 
 $config = require '../config/db.php';
 
-$pdo = new PDO("mysql:host={$config['host']};dbname={$config['dbname']};charset=utf8mb4", $config['username']);
+$pdo = new PDO(
+        "mysql:host={$config['host']};dbname={$config['dbname']};charset={$config['charset']}",
+        $config['username'],
+        $config['password'] ?? '',
+        $config['options'] ?? []
+    );
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 $old_password = $_POST['old_password'] ?? '';

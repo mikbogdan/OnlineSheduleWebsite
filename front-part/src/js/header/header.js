@@ -1,6 +1,7 @@
+import { activateTab } from "..";
 import { API_URL } from "../constants";
 //burger menu
-
+const STORAGE_KEY = "activeMainTab";
 const burger = document.getElementById("burger-menu");
 const aside = document.getElementById("aside");
 
@@ -39,6 +40,9 @@ document.addEventListener("DOMContentLoaded", function () {
       selectedCity = this.getAttribute("data-city");
       currentCitySpan.textContent = selectedCity;
       localStorage.setItem("selectedCity", selectedCity);
+
+      const target = localStorage.getItem(STORAGE_KEY);
+      activateTab(target);
 
       // Закрываем меню после выбора
       dropdown.classList.remove("active");

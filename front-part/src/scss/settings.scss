@@ -126,6 +126,25 @@
   color: #2c3e50;
 }
 
+.settings-part__cabinets__item {
+  padding: 18px 20px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.settings-part__cabinets__item:last-child {
+  border-bottom: none;
+}
+
+.settings-part__cabinets__title-text {
+  flex: 1;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #2c3e50;
+}
+
 .settings-part__subjects__item-id {
   color: #7f8c8d;
   font-size: 14px;

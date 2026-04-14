@@ -77,6 +77,7 @@ export function tableAdd(item) {
     }
     tableTr.appendChild(tableTd);
   });
+
   const delTeacherBtn = document.createElement("td");
   delTeacherBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
   delTeacherBtn.classList.add("delete-teacher");

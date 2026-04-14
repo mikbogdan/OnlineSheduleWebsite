@@ -1,6 +1,8 @@
 import { API_URL } from "./constants";
 import { createProfileModal } from "./header/header";
 
+export let userRole = "";
+
 export async function checkAuthAndApplyRestrictions() {
   try {
     const res = await fetch(`${API_URL}/check-auth.php`, {
@@ -29,7 +31,7 @@ export async function checkAuthAndApplyRestrictions() {
     // Применяем роль и филиалы с сервера
     window.t_id = data.t_id || null;
 
-    const userRole = data.role || "student";
+    userRole = data.role || "student";
     if (userRole === "admin" || userRole === "superadmin") {
       window.userRoleCheck = false;
     } else {
