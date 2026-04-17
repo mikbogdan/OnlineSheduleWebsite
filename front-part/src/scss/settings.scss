@@ -355,3 +355,184 @@ input:checked + .toggle-slider:before {
   color: white;
   border-color: #3498db;
 }
+
+/* === OVERLAY === */
+#importModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+/* === КОНТЕНТ === */
+.import-modal {
+  background: #fff;
+  width: 100%;
+  max-width: 480px;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  animation: modalFade 0.25s ease;
+}
+
+/* === HEADER === */
+.import-modal h2 {
+  margin: 0 0 20px;
+  font-size: 20px;
+  color: #2c3e50;
+  text-align: center;
+}
+
+/* === STEP BLOCK === */
+#importModal p {
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #666;
+}
+
+/* === INPUT FILE === */
+#importFile {
+  width: 100%;
+  padding: 10px;
+  border: 1px dashed #ccc;
+  border-radius: 10px;
+  background: #fafafa;
+  cursor: pointer;
+}
+
+/* === SELECT === */
+#importModal select {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+}
+
+/* === КНОПКИ === */
+#importModal button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+/* PRIMARY */
+#toStep2,
+#toStep3,
+#startImport {
+  background: #26a69a;
+  color: #fff;
+}
+
+#toStep2:hover,
+#toStep3:hover,
+#startImport:hover {
+  background: #1f8c82;
+}
+
+/* CLOSE */
+#closeImport {
+  background: #eee;
+  color: #333;
+}
+
+#closeImport:hover {
+  background: #ddd;
+}
+
+/* === ПРЕВЬЮ === */
+#importPreview {
+  max-height: 150px;
+  overflow-y: auto;
+  margin-top: 10px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 8px;
+  background: #fafafa;
+}
+
+/* строка превью */
+#importPreview div {
+  padding: 6px 8px;
+  font-size: 13px;
+  border-bottom: 1px solid #eee;
+}
+
+#importPreview div:last-child {
+  border-bottom: none;
+}
+
+/* === АНИМАЦИЯ === */
+@keyframes modalFade {
+  from {
+    opacity: 0;
+    transform: translateY(15px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.import-stepper {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.import-stepper .step {
+  flex: 1;
+  text-align: center;
+  font-size: 13px;
+  padding: 8px;
+  border-bottom: 2px solid #ddd;
+  color: #999;
+}
+
+.import-stepper .step.active {
+  color: #26a69a;
+  border-color: #26a69a;
+  font-weight: 600;
+}
+
+.import-progress {
+  width: 100%;
+  height: 10px;
+  background: #eee;
+  border-radius: 10px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+
+#importProgressBar {
+  height: 100%;
+  width: 0%;
+  background: #26a69a;
+  transition: width 0.3s;
+}
+
+#importStatus {
+  font-size: 12px;
+  margin-top: 6px;
+  color: #666;
+}
+
+.import__subject_btn {
+  background-color: #25a79a;
+  &:hover {
+    background-color: #20897f;
+  }
+}

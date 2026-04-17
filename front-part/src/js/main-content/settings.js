@@ -135,23 +135,6 @@ function renderPagination() {
   pagination.appendChild(nextBtn);
 }
 
-// const modalSubjectAdd = `
-//     <div class="settings-part__subjects-modal" id="dynamicAddModal">
-//       <div class="settings-part__subjects-modal-content">
-//         <h2 class="settings-part__subjects-modal-title">Добавить предмет</h2>
-//         <input type="text" id="subjectName" class="settings-part__subjects-modal-input" placeholder="Введите название предмета" autofocus>
-//         <div class="settings-part__subjects-modal-actions">
-//           <button id="btnSaveNewSubject" class="settings-part__subjects-modal-btn settings-part__subjects-modal-btn--save">
-//             Сохранить
-//           </button>
-//           <button id="btnCancelAdd" class="settings-part__subjects-modal-btn settings-part__subjects-modal-btn--cancel">
-//             Отмена
-//           </button>
-//         </div>
-//       </div>
-//     </div>
-//   `;
-
 const modalSubjectAdd = `
   <div class="settings-part__subjects-modal" id="dynamicAddModal">
     <div class="settings-part__subjects-modal-content">
@@ -323,6 +306,223 @@ function addSubject() {
     if (e.key === "Enter") document.getElementById("btnSaveNewSubject").click();
     if (e.key === "Escape") closeModal();
   });
+}
+
+const importBtn = document.getElementById("importSubjectBtn");
+
+importBtn.addEventListener("click", openSubjectImportModal);
+
+function openSubjectImportModal() {
+  const modalHTML = `
+  <div class="settings-part__subjects-modal" id="importModal">
+    <div class="settings-part__subjects-modal-content import-modal">
+
+      <div class="import-stepper">
+        <div class="step active" data-step="1">1. Файл</div>
+        <div class="step" data-step="2">2. Соответствие</div>
+        <div class="step" data-step="3">3. Импорт</div>
+      </div>
+
+      <div id="importStep1">
+        <p><b>Шаг 1:</b> Загрузка файла</p>
+        <input type="file" id="importFile" accept=".xlsx,.xls" />
+        <button id="toStep2" class="settings-part__subjects-modal-btn--save">Далее</button>
+      </div>
+
+      <div id="importStep2" style="display:none">
+        <p><b>Шаг 2:</b> Соответствие колонок</p>
+
+        <label>Предмет:</label>
+        <select id="mapSubject"></select>
+
+        <label>Разряд:</label>
+        <select id="mapGrade"></select>
+
+        <label>Тип:</label>
+        <select id="mapType"></select>
+
+        <button id="toStep3">Далее</button>
+      </div>
+
+      <div id="importStep3" style="display:none">
+        <p><b>Шаг 3:</b> Импорт</p>
+        <div class="import-progress">
+          <div id="importProgressBar"></div>
+        </div>
+        <div id="importStatus"></div>
+
+        <div id="importPreview"></div>
+        <button id="startImport">Импортировать</button>
+      </div>
+
+      <button id="closeImport">Закрыть</button>
+    </div>
+  </div>
+  `;
+
+  document.body.insertAdjacentHTML("beforeend", modalHTML);
+
+  bindImportEvents();
+}
+
+function updateImportProgress(current, total) {
+  const percent = Math.round((current / total) * 100);
+
+  const bar = document.getElementById("importProgressBar");
+  const status = document.getElementById("importStatus");
+
+  if (bar) bar.style.width = percent + "%";
+  if (status) status.textContent = `Импортировано ${current} из ${total}`;
+}
+
+function setImportStep(step) {
+  document.querySelectorAll(".import-stepper .step").forEach((el) => {
+    el.classList.toggle("active", Number(el.dataset.step) === step);
+  });
+}
+
+let parsedExcelData = [];
+
+// function validateImportData(rows, subjectKey, gradeKey, typeKey) {
+//   const errors = [];
+
+//   rows.forEach((row, index) => {
+//     const grades = String(row[gradeKey] || "")
+//       .split(",")
+//       .map((g) => g.trim());
+
+//     const invalidGrades = grades.filter(
+//       (g) => g && (isNaN(g) || g < 1 || g > 8),
+//     );
+
+//     if (invalidGrades.length) {
+//       errors.push(
+//         `Строка ${index + 1}: неверные разряды (${invalidGrades.join(",")})`,
+//       );
+//     }
+
+//     if (!row[subjectKey]) {
+//       errors.push(`Строка ${index + 1}: пустой предмет`);
+//     }
+//   });
+
+//   return errors;
+// }
+
+function bindImportEvents() {
+  const modal = document.getElementById("importModal");
+
+  document.getElementById("closeImport").onclick = () => modal.remove();
+
+  document.getElementById("toStep2").onclick = async () => {
+    const file = document.getElementById("importFile").files[0];
+    if (!file) return alert("Выберите файл");
+
+    const data = await readExcel(file);
+    parsedExcelData = data;
+
+    fillColumnSelectors(data);
+
+    document.getElementById("importStep1").style.display = "none";
+    document.getElementById("importStep2").style.display = "block";
+    setImportStep(2);
+  };
+
+  document.getElementById("toStep3").onclick = () => {
+    renderPreview();
+    document.getElementById("importStep2").style.display = "none";
+    document.getElementById("importStep3").style.display = "block";
+    setImportStep(3);
+  };
+
+  document.getElementById("startImport").onclick = importSubjects;
+}
+
+async function readExcel(file) {
+  const data = await file.arrayBuffer();
+  const workbook = XLSX.read(data);
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+  return XLSX.utils.sheet_to_json(sheet, {
+    defval: "", // ← Вот главное добавление
+  });
+}
+
+function fillColumnSelectors(data) {
+  if (!data || data.length === 0) return;
+
+  const allKeys = new Set();
+  data.forEach((row) => {
+    Object.keys(row).forEach((key) => allKeys.add(key));
+  });
+
+  const columns = Array.from(allKeys);
+
+  ["mapSubject", "mapGrade", "mapType"].forEach((id) => {
+    const select = document.getElementById(id);
+    select.innerHTML = columns
+      .map((c) => `<option value="${c}">${c}</option>`)
+      .join("");
+  });
+}
+
+function renderPreview() {
+  const subjectKey = document.getElementById("mapSubject").value;
+  const gradeKey = document.getElementById("mapGrade").value;
+  const typeKey = document.getElementById("mapType").value;
+
+  const preview = document.getElementById("importPreview");
+
+  preview.innerHTML = parsedExcelData
+    .slice(0, 5)
+    .map((row) => {
+      return `
+        <div>
+          ${row[subjectKey]} | ${row[gradeKey]} | ${row[typeKey]}
+        </div>
+      `;
+    })
+    .join("");
+}
+
+async function importSubjects() {
+  const subjectKey = document.getElementById("mapSubject").value;
+  const gradeKey = document.getElementById("mapGrade").value;
+  const typeKey = document.getElementById("mapType").value;
+
+  const total = parsedExcelData.length;
+  const totalData = [];
+
+  for (let i = 0; i < total; i++) {
+    const row = parsedExcelData[i];
+
+    const subject = String(row[subjectKey] || "").trim();
+    const gradeRaw = String(row[gradeKey] || "").trim();
+    const typeRaw = String(row[typeKey] || "").trim();
+
+    const payload = {
+      subject,
+      subject_grade: gradeRaw ? gradeRaw : null,
+      subject_type: typeRaw ? typeRaw : null,
+    };
+    totalData.push(payload);
+    updateImportProgress(i + 1, total);
+  }
+  try {
+    await fetch(`${API_URL}/subjects-import.php`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify([totalData]),
+    });
+  } catch (e) {
+    console.error("Ошибка строки");
+  }
+
+  alert("Импорт завершен");
+  document.getElementById("importModal").remove();
+  loadSubjects();
 }
 
 function addBtn(modalTemplate, request, extraFields = {}) {

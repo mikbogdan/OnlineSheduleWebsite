@@ -1,5 +1,6 @@
 import { API_URL } from "../constants";
 import { debounce } from "./main-content";
+import { activateTab } from "..";
 
 const LESSON_FILTERS_STORAGE_KEY = "lessonFilters";
 
@@ -52,6 +53,7 @@ let currentMonday = getMonday(currentDate);
 let currentView = "week";
 
 let cachedCabs = [];
+let selectedSlots = [];
 
 function getMonday(date) {
   const d = new Date(date);
@@ -59,13 +61,6 @@ function getMonday(date) {
   const day = d.getDay();
   d.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
   return d;
-}
-
-function formatLocalDate(date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
 }
 
 function getBranch() {
@@ -115,7 +110,7 @@ function updateHeader() {
     const end = new Date(currentMonday);
     end.setDate(currentMonday.getDate() + lastDayOffset);
 
-    const startStr = `${start.getDate()} ${months[start.getMonth()]} ${start.getFullYear()} г.`;
+    const startStr = `${start.getDate()} ${months[start.getMonth()]}`;
     const endStr = `${end.getDate()} ${months[end.getMonth()]} ${end.getFullYear()} г.`;
 
     periodEl.textContent = "Неделя";
@@ -150,6 +145,7 @@ function renderWeekGrid() {
 
   const { start, end } = getHoursRange();
   const visibleDays = getVisibleWeekDays();
+  const SLOT = 20;
 
   updateGridColumns(visibleDays.length);
 
@@ -170,12 +166,23 @@ function renderWeekGrid() {
   });
 
   for (let hour = start; hour <= end; hour++) {
-    const timeStr = `${hour.toString().padStart(2, "0")}:00`;
-    grid.innerHTML += `<div class="time-cell">${timeStr}</div>`;
+    for (let min = 0; min < 60; min += SLOT) {
+      const showLabel = min === 0;
+      const timeStr = `${hour.toString().padStart(2, "0")}:${min.toString().padStart(2, "0")}`;
 
-    visibleDays.forEach((weekday) => {
-      grid.innerHTML += `<div class="lesson-cell" data-day="${weekday}" data-hour="${hour}"></div>`;
-    });
+      grid.innerHTML += `<div class="time-cell">${showLabel ? timeStr : ""}</div>`;
+
+      visibleDays.forEach((weekday) => {
+        grid.innerHTML += `
+          <div 
+            class="lesson-cell slot-20" 
+            data-day="${weekday}" 
+            data-hour="${hour}" 
+            data-minute="${min}">
+          </div>
+        `;
+      });
+    }
   }
 
   toggleDayMode();
@@ -188,29 +195,40 @@ function renderDayGrid(cabinets = []) {
   if (!grid) return;
 
   const { start, end } = getHoursRange();
+  const SLOT = 20;
 
   updateGridColumns(cabinets.length);
 
   grid.innerHTML = "";
   grid.innerHTML += `<div class="time-cell"></div>`;
 
-  cabinets.forEach((cab, index) => {
+  cabinets.forEach((cab) => {
     grid.innerHTML += `<div class="day-cell">${cab.cabinet}</div>`;
   });
 
   for (let hour = start; hour <= end; hour++) {
-    const timeStr = `${hour.toString().padStart(2, "0")}:00`;
-    grid.innerHTML += `<div class="time-cell">${timeStr}</div>`;
+    for (let min = 0; min < 60; min += SLOT) {
+      const showLabel = min === 0;
+      const timeStr = `${hour.toString().padStart(2, "0")}:${min.toString().padStart(2, "0")}`;
 
-    cabinets.forEach((cab, index) => {
-      grid.innerHTML += `<div class="lesson-cell" data-day="${index}" data-hour="${hour}"></div>`;
-    });
+      grid.innerHTML += `<div class="time-cell">${showLabel ? timeStr : ""}</div>`;
+
+      cabinets.forEach((cab, index) => {
+        grid.innerHTML += `
+          <div 
+            class="lesson-cell slot-20" 
+            data-day="${index}" 
+            data-hour="${hour}" 
+            data-minute="${min}">
+          </div>
+        `;
+      });
+    }
   }
 
   toggleDayMode();
   updateHeader();
 }
-
 function renderGrid(cabinets = []) {
   if (currentView === "week") {
     renderWeekGrid();
@@ -283,7 +301,7 @@ async function fetchScheduleData() {
   }
 
   if (currentView === "day") {
-    url += `&date=${formatLocalDate(currentDate)}`;
+    url += `&date=${formatDateForInput(currentDate)}`;
   } else {
     const visibleDays = getVisibleWeekDays();
     const start = new Date(currentMonday);
@@ -294,7 +312,7 @@ async function fetchScheduleData() {
       currentMonday.getDate() + (visibleDays[visibleDays.length - 1] - 1),
     );
 
-    url += `&start=${formatLocalDate(start)}&end=${formatLocalDate(end)}`;
+    url += `&start=${formatDateForInput(start)}&end=${formatDateForInput(end)}`;
   }
 
   const lessonsResponse = await fetch(url, { credentials: "include" });
@@ -386,14 +404,20 @@ function createLessonBlock(lesson, cabinets, layout) {
     return { cell: null, element: null };
   }
 
+  const slotMinute = Math.floor(startMin / 20) * 20;
+
   const cell = document.querySelector(
-    `.lesson-cell[data-day="${layout.day}"][data-hour="${startHour}"]`,
+    `.lesson-cell[data-day="${layout.day}"][data-hour="${startHour}"][data-minute="${slotMinute}"]`,
   );
   if (!cell) return { cell: null, element: null };
 
   const durationMinutes = (endHour - startHour) * 60 + (endMin - startMin);
-  const top = `${(startMin / 60) * 100}%`;
-  const height = `${(durationMinutes / 60) * 100}%`;
+
+  const offsetInsideSlot = startMin - slotMinute;
+  const top = `${(offsetInsideSlot / 20) * 100}%`;
+
+  const slotHeightMinutes = 20;
+  const height = `${(durationMinutes / slotHeightMinutes) * 100}%`;
 
   const cabinet = cabinets.find((c) => c.id == lesson.LESSON_CABINET);
   const color = cabinet ? cabinet.cabinet_color : "#95a5a6";
@@ -541,6 +565,8 @@ function filterLessonsBeforeRender(lessons) {
       const lessonSubject = normalizeFilterValue(lesson.LESSON_NAME);
       const lessonClients = splitCommaValues(lesson.LESSON_CLIENTS);
       const lessonTeachers = splitCommaValues(lesson.LESSON_TEACHER);
+      const lessonContract = normalizeFilterValue(lesson.LESSON_CONTRACT);
+      const lessonComment = normalizeFilterValue(lesson.LESSON_COMMENT);
 
       const matched = lessonFilters.searchItems.some((item) => {
         const label = normalizeFilterValue(item.label);
@@ -550,11 +576,19 @@ function filterLessonsBeforeRender(lessons) {
         }
 
         if (item.type === "client") {
-          return lessonClients.includes(label);
+          return lessonClients.some((c) => c.includes(label));
         }
 
         if (item.type === "teacher") {
-          return lessonTeachers.includes(label);
+          return lessonTeachers.some((t) => t.includes(label));
+        }
+
+        if (item.type === "contract") {
+          return lessonContract.includes(label);
+        }
+
+        if (item.type === "comment") {
+          return lessonComment.includes(label);
         }
 
         return false;
@@ -613,10 +647,126 @@ function renderLessons(lessons, cabinets) {
   });
 }
 
+let isSelecting = false;
+let startCell = null;
+
+function enableTimeSelection() {
+  const cells = document.querySelectorAll(".lesson-cell");
+
+  cells.forEach((cell) => {
+    cell.addEventListener("mousedown", () => {
+      isSelecting = true;
+      startCell = cell;
+
+      selectedSlots = [];
+      document
+        .querySelectorAll(".lesson-cell.selected")
+        .forEach((c) => c.classList.remove("selected"));
+
+      cell.classList.add("selected");
+      selectedSlots.push(cell);
+    });
+
+    cell.addEventListener("dblclick", () => {
+      selectedSlots = [cell];
+
+      document
+        .querySelectorAll(".lesson-cell")
+        .forEach((c) => c.classList.remove("selected"));
+
+      cell.classList.add("selected");
+
+      document.getElementById("addLesson").click();
+    });
+
+    cell.addEventListener("mouseenter", () => {
+      if (!isSelecting || !startCell) return;
+
+      const startDay = startCell.dataset.day;
+      const currentDay = cell.dataset.day;
+
+      if (startDay !== currentDay) return;
+
+      const allCells = Array.from(
+        document.querySelectorAll(`.lesson-cell[data-day="${startDay}"]`),
+      );
+
+      const startIndex = allCells.indexOf(startCell);
+      const currentIndex = allCells.indexOf(cell);
+
+      const [from, to] =
+        startIndex < currentIndex
+          ? [startIndex, currentIndex]
+          : [currentIndex, startIndex];
+
+      selectedSlots = [];
+
+      // очищаем только эту колонку
+      allCells.forEach((c) => c.classList.remove("selected"));
+
+      for (let i = from; i <= to; i++) {
+        allCells[i].classList.add("selected");
+        selectedSlots.push(allCells[i]);
+      }
+    });
+  });
+
+  document.addEventListener("mouseup", () => {
+    if (isSelecting) {
+      isSelecting = false;
+
+      if (selectedSlots.length) {
+        const firstCell = selectedSlots[0];
+
+        const selectedCabinetIndex = Number(firstCell.dataset.day);
+
+        window.selectedCabinetId =
+          currentView === "day" && cachedCabs[selectedCabinetIndex]
+            ? cachedCabs[selectedCabinetIndex].id
+            : null;
+      }
+    }
+  });
+}
+
+function getTimeFromSlots() {
+  if (!selectedSlots.length) return null;
+
+  const sorted = [...selectedSlots].sort((a, b) => {
+    const ah = +a.dataset.hour;
+    const am = +(a.dataset.minute ?? 0);
+    const bh = +b.dataset.hour;
+    const bm = +(b.dataset.minute ?? 0);
+
+    return ah * 60 + am - (bh * 60 + bm);
+  });
+
+  const first = sorted[0];
+  const last = sorted[sorted.length - 1];
+
+  const startH = +first.dataset.hour;
+  const startM = +first.dataset.minute;
+
+  const endH = +last.dataset.hour;
+  const endM = +last.dataset.minute;
+
+  const SLOT = 20;
+  const endTotal = endH * 60 + endM + SLOT;
+
+  const finalEndH = Math.floor(endTotal / 60);
+  const finalEndM = endTotal % 60;
+
+  return {
+    start: `${String(startH).padStart(2, "0")}:${String(startM).padStart(2, "0")}`,
+    end: `${String(finalEndH).padStart(2, "0")}:${String(finalEndM).padStart(2, "0")}`,
+  };
+}
+
 async function initSchedule() {
   try {
     const { lessons, cabinets } = await fetchScheduleData();
     renderGrid(cabinets);
+    enableTimeSelection();
     renderLessons(lessons, cabinets);
     updateTodayButtonState();
   } catch (err) {
@@ -1104,14 +1254,16 @@ async function openLessonModal(lessonId) {
       </div>
 
       <div class="lesson-modal-body view-mode">
-        <div class="form-group">
-          <label>Дата урока</label>
-          <div class="view-field">${lesson.LESSON_DATA || "—"}</div>
-        </div>
+        <div class="lesson-modal-container">
+          <div class="form-group">
+            <label>Дата урока</label>
+            <div class="view-field">${lesson.LESSON_DATA || "—"}</div>
+          </div>
 
-        <div class="form-group">
-          <label>Тип урока</label>
-          <div class="view-field">${lessonTypeText}</div>
+          <div class="form-group">
+            <label>Тип урока</label>
+            <div class="view-field">${lessonTypeText}</div>
+          </div>
         </div>
 
         <div class="form-group">
@@ -1119,22 +1271,23 @@ async function openLessonModal(lessonId) {
           <div class="view-field">${lesson.LESSON_NAME || "—"}</div>
         </div>
 
-        <div class="form-group">
-          <label>Время</label>
-          <div class="view-field">
-            ${formatTime(lesson.LESSON_START)} – ${formatTime(
-              lesson.LESSON_END,
-            )}
+        <div class="lesson-modal-container">
+          <div class="form-group">
+            <label>Время</label>
+            <div class="view-field">
+              ${formatTime(lesson.LESSON_START)} – ${formatTime(
+                lesson.LESSON_END,
+              )}
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Аудитория</label>
+            <div class="view-field">${lesson.cabinet_name || "—"}</div>
           </div>
         </div>
 
         <div class="form-group">
-          <label>Аудитория</label>
-          <div class="view-field">${lesson.cabinet_name || "—"}</div>
-        </div>
-
-        <div class="form-group">
-          <label>Преподаватели</label>
+          <label>Педагоги</label>
           <div>
             ${
               lesson.LESSON_TEACHER
@@ -1259,6 +1412,46 @@ async function openLessonModal(lessonId) {
   });
 }
 
+function getSelectedTimeRange() {
+  if (!selectedSlots.length) return null;
+
+  const sorted = [...selectedSlots].sort((a, b) => {
+    const aTime =
+      parseInt(a.dataset.hour) * 60 + parseInt(a.dataset.minute || 0);
+    const bTime =
+      parseInt(b.dataset.hour) * 60 + parseInt(b.dataset.minute || 0);
+    return aTime - bTime;
+  });
+
+  const first = sorted[0];
+  const last = sorted[sorted.length - 1];
+
+  const startHour = parseInt(first.dataset.hour);
+  const startMinute = parseInt(first.dataset.minute || 0);
+
+  const endHour = parseInt(last.dataset.hour);
+  const endMinute = parseInt(last.dataset.minute || 0) + 20;
+
+  return {
+    date: getDateFromCell(first),
+    start: `${String(startHour).padStart(2, "0")}:${String(startMinute).padStart(2, "0")}`,
+    end: `${String(endHour).padStart(2, "0")}:${String(endMinute).padStart(2, "0")}`,
+  };
+}
+
+function getDateFromCell(cell) {
+  if (currentView === "week") {
+    const weekday = parseInt(cell.dataset.day);
+
+    const date = new Date(currentMonday);
+    date.setDate(currentMonday.getDate() + (weekday - 1));
+
+    return formatDateForInput(date);
+  } else {
+    return formatDateForInput(currentDate);
+  }
+}
+
 // Кнопка добавления урока
 document.getElementById("addLesson").addEventListener("click", async () => {
   let cabinets = [];
@@ -1330,18 +1523,20 @@ document.getElementById("addLesson").addEventListener("click", async () => {
         </div>
 
         <div class="lesson-modal-body">
-          <div class="form-group">
-            <label>Дата урока</label>
-            <input type="date" id="lessonDate" class="lesson-input" required>
-          </div>
+          <div class="lesson-modal-container">
+            <div class="form-group">
+              <label>Дата урока</label>
+              <input type="date" id="lessonDate" class="lesson-input" required>
+            </div>
 
-          <div class="form-group">
-            <label>Тип урока</label>
-            <select id="lessonType" class="lesson-input">
-              <option value="trial">Пробный</option>
-              <option value="individual">Индивидуальный</option>
-              <option value="group">Групповой</option>
-            </select>
+            <div class="form-group">
+              <label>Тип урока</label>
+              <select id="lessonType" class="lesson-input">
+                <option value="trial">Пробный</option>
+                <option value="individual">Индивидуальный</option>
+                <option value="group">Групповой</option>
+              </select>
+            </div>
           </div>
 
           <div class="form-group">
@@ -1352,71 +1547,60 @@ document.getElementById("addLesson").addEventListener("click", async () => {
             </div>
           </div>
 
-          <div id="subjectDetails" style="display: none; margin-top: 16px;">
+          <!-- Блок деталей предмета -->
+          <div id="subjectDetails" style="display: none; margin-top: 8px;">
+            <div class="lesson-modal-container-3">
+              <div class="form-group" id="subjectTypeGroup">
+                <label>Тип предмета</label>
+                <select id="subjectTypeSelect" class="lesson-input"></select>
+              </div>
+
+              <div class="form-group" id="subjectGradeGroup" style="display: none;">
+                <label>Разряд предмета</label>
+                <select id="subjectGradeSelect" class="lesson-input"></select>
+              </div>
+            </div>
+          </div>
+
+          <div class="lesson-modal-container-3">
             <div class="form-group">
-              <label>Тип предмета</label>
-              <select id="subjectTypeSelect" class="lesson-input"></select>
+              <label>Время начала</label>
+              <input type="time" id="lessonStart" class="lesson-input" required>
             </div>
-
             <div class="form-group">
-              <label>Разряд предмета</label>
-              <select id="subjectGradeSelect" class="lesson-input"></select>
+              <label>Время окончания</label>
+              <input type="time" id="lessonEnd" class="lesson-input" required>
+            </div>
+            <div class="form-group">
+              <label>Аудитория</label>
+              <select id="lessonCabinet" class="lesson-input" required>
+                <option value="">Выберите аудиторию</option>
+                ${cabinets.map((cab) => `<option value="${cab.id}">${cab.cabinet}</option>`).join("")}
+              </select>
             </div>
           </div>
 
+          <!-- Преподаватели и Клиенты (без изменений) -->
           <div class="form-group">
-            <label>Время начала</label>
-            <input type="time" id="lessonStart" class="lesson-input" required>
-          </div>
-
-          <div class="form-group">
-            <label>Время окончания</label>
-            <input type="time" id="lessonEnd" class="lesson-input" required>
-          </div>
-
-          <div class="form-group">
-            <label>Аудитория</label>
-            <select id="lessonCabinet" class="lesson-input" required>
-              <option value="">Выберите аудиторию</option>
-              ${cabinets
-                .map(
-                  (cab) => `<option value="${cab.id}">${cab.cabinet}</option>`,
-                )
-                .join("")}
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>Преподаватель</label>
-            <div id="teachersContainer">
-            </div>
-              <button type="button" id="addTeacherField" class="btn-add-field">
-                + Добавить преподавателя
-              </button>
+            <label>Педагоги</label>
+            <div id="teachersContainer"></div>
+            <button type="button" id="addTeacherField" class="btn-add-field">+ Добавить преподавателя</button>
           </div>
 
           <div class="form-group">
             <label>Клиенты</label>
-            <div id="clientsContainer">
-            </div>
-            <button type="button" id="addClientField" class="btn-add-field">
-              + Добавить клиента
-            </button>
+            <div id="clientsContainer"></div>
+            <button type="button" id="addClientField" class="btn-add-field">+ Добавить клиента</button>
           </div>
 
           <div class="form-group">
             <label>Номер договора</label>
-            <input 
-              type="text" 
-              id="lessonContractNumber" 
-              class="lesson-input" 
-              placeholder="Например: Д-2025/001"
-            >
+            <input type="text" id="lessonContractNumber" class="lesson-input" placeholder="Например: Д-2025/001">
           </div>
 
           <div class="form-group">
             <label>Комментарии</label>
-            <textarea id="lessonComment" class="lesson-input" rows="3"></textarea>
+            <textarea id="lessonComment" class="lesson-input" rows="2"></textarea>
           </div>
         </div>
 
@@ -1431,10 +1615,28 @@ document.getElementById("addLesson").addEventListener("click", async () => {
   document.body.insertAdjacentHTML("beforeend", modalHTML);
 
   const modal = document.getElementById("dynamicLessonModal");
+  const selectCabinet = document.getElementById("lessonCabinet");
+
+  if (window.selectedCabinetId && selectCabinet) {
+    selectCabinet.value = String(window.selectedCabinetId);
+  }
   const inputDate = document.getElementById("lessonDate");
   const inputName = document.getElementById("lessonName");
   const autocompleteList = document.getElementById("autocompleteList");
-  inputDate.valueAsDate = new Date();
+  const selectedRange = getSelectedTimeRange();
+
+  const timeData = getTimeFromSlots();
+
+  if (timeData) {
+    document.getElementById("lessonStart").value = timeData.start;
+    document.getElementById("lessonEnd").value = timeData.end;
+  }
+
+  if (selectedRange) {
+    inputDate.value = selectedRange.date;
+  } else {
+    inputDate.valueAsDate = new Date();
+  }
 
   // === Функция создания поля для преподавателя ===
   function createTeacherField(value = "") {
@@ -1536,44 +1738,46 @@ document.getElementById("addLesson").addEventListener("click", async () => {
             item.addEventListener("click", () => {
               inputName.value = s.subject;
               autocompleteList.innerHTML = "";
-              const details = document.getElementById("subjectDetails");
 
-              const hasType = s.subject_type && s.subject_type.trim() !== "";
-              const hasGrade = s.subject_grade && s.subject_grade.trim() !== "";
+              const hasType = !!(s.subject_type && s.subject_type.trim());
+              const hasGrade = !!(s.subject_grade && s.subject_grade.trim());
 
               if (hasType || hasGrade) {
-                details.style.display = "block";
-                // Типы
+                subjectDetails.style.display = "block";
+
+                // Тип предмета
                 const typeSelect = document.getElementById("subjectTypeSelect");
                 typeSelect.innerHTML = '<option value="">Выберите тип</option>';
-                if (s.subject_type) {
+                if (hasType) {
                   const types = s.subject_type.split(",").map((t) => t.trim());
                   types.forEach((type) => {
-                    const opt = document.createElement("option");
-                    opt.value = type;
-                    opt.textContent = type;
+                    const opt = new Option(type, type);
                     typeSelect.appendChild(opt);
                   });
+                  subjectTypeGroup.style.display = "block";
+                } else {
+                  subjectTypeGroup.style.display = "none";
                 }
 
-                // Разряды
+                // Разряд предмета — показываем только если есть разряды
                 const gradeSelect =
                   document.getElementById("subjectGradeSelect");
                 gradeSelect.innerHTML =
                   '<option value="">Выберите разряд</option>';
-                if (s.subject_grade) {
+                if (hasGrade) {
                   const grades = s.subject_grade
                     .split(",")
                     .map((g) => g.trim());
                   grades.forEach((grade) => {
-                    const opt = document.createElement("option");
-                    opt.value = grade;
-                    opt.textContent = `${grade}p.`;
+                    const opt = new Option(`${grade}p.`, grade);
                     gradeSelect.appendChild(opt);
                   });
+                  subjectGradeGroup.style.display = "block";
+                } else {
+                  subjectGradeGroup.style.display = "none";
                 }
               } else {
-                details.style.display = "none";
+                subjectDetails.style.display = "none";
               }
             });
 
@@ -1661,7 +1865,10 @@ document.getElementById("addLesson").addEventListener("click", async () => {
   });
 
   // === ЗАКРЫТИЕ МОДАЛКИ ===
-  const closeModal = () => modal.remove();
+  const closeModal = () => {
+    window.selectedCabinetId = null;
+    modal.remove();
+  };
 
   modal
     .querySelector(".lesson-modal-close")
@@ -1736,6 +1943,8 @@ document.getElementById("addLesson").addEventListener("click", async () => {
         if (result.success) {
           closeModal();
           initSchedulePage(); // обновляем расписание
+          selectedSlots.forEach((c) => c.classList.remove("selected"));
+          selectedSlots = [];
           alert("Урок успешно добавлен!");
         } else {
           alert("Ошибка: " + result.message);
@@ -1909,19 +2118,21 @@ async function openEditLessonModal(lessonId) {
           <span class="lesson-modal-close">×</span>
         </div>
 
-        <div class="lesson-modal-body">
-          <div class="form-group">
-            <label>Дата урока</label>
-            <input type="date" id="lessonDate" class="lesson-input" required value="${lesson.LESSON_DATA || ""}">
-          </div>
+          <div class="lesson-modal-body">
+          <div class="lesson-modal-container">
+            <div class="form-group">
+              <label>Дата урока</label>
+              <input type="date" id="lessonDate" class="lesson-input" required value="${lesson.LESSON_DATA || ""}">
+            </div>
 
-          <div class="form-group">
-            <label>Тип урока</label>
-            <select id="lessonType" class="lesson-input">
-              <option value="trial" ${lesson.LESSON_TYPE === "trial" ? "selected" : ""}>Пробный</option>
-              <option value="individual" ${lesson.LESSON_TYPE === "individual" ? "selected" : ""}>Индивидуальный</option>
-              <option value="group" ${lesson.LESSON_TYPE === "group" ? "selected" : ""}>Групповой</option>
-            </select>
+            <div class="form-group">
+              <label>Тип урока</label>
+              <select id="lessonType" class="lesson-input">
+                <option value="trial" ${lesson.LESSON_TYPE === "trial" ? "selected" : ""}>Пробный</option>
+                <option value="individual" ${lesson.LESSON_TYPE === "individual" ? "selected" : ""}>Индивидуальный</option>
+                <option value="group" ${lesson.LESSON_TYPE === "group" ? "selected" : ""}>Групповой</option>
+              </select>
+            </div>
           </div>
 
           <div class="form-group">
@@ -1933,44 +2144,50 @@ async function openEditLessonModal(lessonId) {
           </div>
 
           <!-- Блок типа и разряда -->
-          <div id="subjectDetails" style="display: none; margin-top: 16px;">
-            <div class="form-group">
-              <label>Тип предмета</label>
-              <select id="subjectTypeSelect" class="lesson-input"></select>
+          <div id="subjectDetails" class="lesson-modal-container-3" style="display: none; margin-top: 16px;">
+            <div id="subjectTypeContainer">
+              <div class="form-group">
+                <label>Тип предмета</label>
+                <select id="subjectTypeSelect" class="lesson-input"></select>
+              </div>
             </div>
-            <div class="form-group">
-              <label>Разряд предмета</label>
-              <select id="subjectGradeSelect" class="lesson-input"></select>
+
+            <div id="subjectGradeContainer" style="display: none;">
+              <div class="form-group">
+                <label>Разряд предмета</label>
+                <select id="subjectGradeSelect" class="lesson-input"></select>
+              </div>
             </div>
           </div>
 
-          <!-- Остальные поля остаются без изменений -->
-          <div class="form-group">
-            <label>Время начала</label>
-            <input type="time" id="lessonStart" class="lesson-input" required value="${lesson.LESSON_START?.slice(0, 5) || ""}">
+          <div class="lesson-modal-container-3">
+            <div class="form-group">
+              <label>Время начала</label>
+              <input type="time" id="lessonStart" class="lesson-input" required value="${lesson.LESSON_START?.slice(0, 5) || ""}">
+            </div>
+
+            <div class="form-group">
+              <label>Время окончания</label>
+              <input type="time" id="lessonEnd" class="lesson-input" required value="${lesson.LESSON_END?.slice(0, 5) || ""}">
+            </div>
+
+            <div class="form-group">
+              <label>Аудитория</label>
+              <select id="lessonCabinet" class="lesson-input" required>
+                <option value="">Выберите аудиторию</option>
+                ${cabinets
+                  .map(
+                    (cab) => `
+                  <option value="${cab.id}" ${cab.id == lesson.LESSON_CABINET ? "selected" : ""}>${cab.cabinet}</option>
+                `,
+                  )
+                  .join("")}
+              </select>
+            </div>
           </div>
 
           <div class="form-group">
-            <label>Время окончания</label>
-            <input type="time" id="lessonEnd" class="lesson-input" required value="${lesson.LESSON_END?.slice(0, 5) || ""}">
-          </div>
-
-          <div class="form-group">
-            <label>Аудитория</label>
-            <select id="lessonCabinet" class="lesson-input" required>
-              <option value="">Выберите аудиторию</option>
-              ${cabinets
-                .map(
-                  (cab) => `
-                <option value="${cab.id}" ${cab.id == lesson.LESSON_CABINET ? "selected" : ""}>${cab.cabinet}</option>
-              `,
-                )
-                .join("")}
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>Преподаватели</label>
+            <label>Педагоги</label>
             <div id="teachersContainer"></div>
             <button type="button" id="addTeacherField" class="btn-add-field">+ Добавить преподавателя</button>
           </div>
@@ -1988,7 +2205,7 @@ async function openEditLessonModal(lessonId) {
 
           <div class="form-group">
             <label>Комментарии</label>
-            <textarea id="lessonComment" class="lesson-input" rows="3">${lesson.LESSON_COMMENT || ""}</textarea>
+            <textarea id="lessonComment" class="lesson-input" rows="1">${lesson.LESSON_COMMENT || ""}</textarea>
           </div>
         </div>
 
@@ -2008,6 +2225,10 @@ async function openEditLessonModal(lessonId) {
   const gradeSelect = document.getElementById("subjectGradeSelect");
   const detailsBlock = document.getElementById("subjectDetails");
   const autocompleteList = document.getElementById("autocompleteList");
+
+  const subjectDetails = document.getElementById("subjectDetails");
+  const typeContainer = document.getElementById("subjectTypeContainer");
+  const gradeContainer = document.getElementById("subjectGradeContainer");
 
   // === Парсинг текущего названия урока ===
   const currentName = lesson.LESSON_NAME || "";
@@ -2029,8 +2250,8 @@ async function openEditLessonModal(lessonId) {
 
   // === При открытии модалки сразу запрашиваем полный предмет по названию ===
   async function loadFullSubject(subjectName) {
-    if (!subjectName) {
-      detailsBlock.style.display = "none";
+    if (!subjectName?.trim()) {
+      subjectDetails.style.display = "none";
       return;
     }
 
@@ -2047,44 +2268,52 @@ async function openEditLessonModal(lessonId) {
         const hasType = s.subject_type && s.subject_type.trim() !== "";
         const hasGrade = s.subject_grade && s.subject_grade.trim() !== "";
 
+        // Показываем общий блок деталей только если есть хоть что-то
         if (hasType || hasGrade) {
-          detailsBlock.style.display = "block";
+          subjectDetails.style.display = "flex";
 
-          // Типы — все!
+          // === Тип предмета ===
           typeSelect.innerHTML = '<option value="">Выберите тип</option>';
           if (hasType) {
-            const types = s.subject_type.split(",").map((t) => t.trim());
+            const types = s.subject_type
+              .split(",")
+              .map((t) => t.trim())
+              .filter(Boolean);
             types.forEach((type) => {
-              const opt = document.createElement("option");
-              opt.value = type;
-              opt.textContent = type;
-              // Если совпадает с текущим из названия — выбираем
+              const opt = new Option(type, type);
               if (type === initialType) opt.selected = true;
               typeSelect.appendChild(opt);
             });
+            typeContainer.style.display = "block"; // всегда показываем, если есть типы
+          } else {
+            typeContainer.style.display = "none";
           }
 
-          // Разряды — все!
+          // === Разряд предмета ===
           gradeSelect.innerHTML = '<option value="">Выберите разряд</option>';
           if (hasGrade) {
-            const grades = s.subject_grade.split(",").map((g) => g.trim());
+            const grades = s.subject_grade
+              .split(",")
+              .map((g) => g.trim())
+              .filter(Boolean);
             grades.forEach((grade) => {
-              const opt = document.createElement("option");
-              opt.value = grade;
-              opt.textContent = `${grade}p.`;
+              const opt = new Option(`${grade}p.`, grade);
               if (grade === initialGrade) opt.selected = true;
               gradeSelect.appendChild(opt);
             });
+            gradeContainer.style.display = "block"; // показываем строку только если есть разряды
+          } else {
+            gradeContainer.style.display = "none";
           }
         } else {
-          detailsBlock.style.display = "none";
+          subjectDetails.style.display = "none";
         }
       } else {
-        detailsBlock.style.display = "none";
+        subjectDetails.style.display = "none";
       }
     } catch (err) {
       console.error("Ошибка загрузки деталей предмета:", err);
-      detailsBlock.style.display = "none";
+      subjectDetails.style.display = "none";
     }
   }
 
@@ -2308,6 +2537,8 @@ async function fetchLessonFilterSearch(query) {
       subjects: [],
       clients: [],
       teachers: [],
+      contracts: [],
+      comments: [],
     }
   );
 }
@@ -2337,7 +2568,7 @@ function ensureLessonFilterModal() {
               type="text"
               id="lessonFilterSearchInput"
               class="lesson-filter-input"
-              placeholder="По предмету, клиенту или педагогу"
+              placeholder="По предмету, клиенту, педагогу, договору или комментарию"
             />
             <div id="lessonFilterSearchDropdown" class="lesson-filter-search-dropdown" hidden></div>
             <div id="lessonFilterSelectedItems" class="lesson-filter-selected"></div>
@@ -2576,6 +2807,18 @@ function renderLessonFilterSearchDropdown(data) {
       items: data.teachers || [],
       labelKey: "full_name",
     },
+    {
+      title: "Договор",
+      type: "contract",
+      items: data.contracts || [],
+      labelKey: "contract",
+    },
+    {
+      title: "Комментарий",
+      type: "comment",
+      items: data.comments || [],
+      labelKey: "comment",
+    },
   ];
 
   let hasAny = false;
@@ -2690,7 +2933,9 @@ function normalizeLessonFilters() {
         (item) =>
           item &&
           item.id !== undefined &&
-          ["subject", "client", "teacher"].includes(item.type) &&
+          ["subject", "client", "teacher", "contract", "comment"].includes(
+            item.type,
+          ) &&
           item.label,
       )
     : [];
@@ -2800,6 +3045,8 @@ let regularLessonsPageState = {
   data: [],
 };
 
+let originalLessonsContent = null;
+
 let regularLessonFormState = {
   cabinets: [],
   selectedSubject: null,
@@ -2807,10 +3054,18 @@ let regularLessonFormState = {
 };
 
 async function renderRegularLessonsPage() {
-  const container = document.getElementById("lessons-part");
-  if (!container) return;
+  const schedule = document.getElementById("schedulePage");
+  const regular = document.getElementById("regularLessonsPage");
 
-  container.innerHTML = getRegularLessonsPageTemplate();
+  if (!schedule || !regular) return;
+
+  // скрываем расписание
+  schedule.style.display = "none";
+
+  // показываем regular lessons
+  regular.style.display = "block";
+
+  regular.innerHTML = getRegularLessonsPageTemplate();
   bindRegularLessonsPageEvents();
 
   try {
@@ -2841,7 +3096,11 @@ function getRegularLessonsPageTemplate() {
             </button>
           </div>
 
-          <div class="clients-header__right"></div>
+          <div class="clients-header__right">
+            <button id="backToScheduleBtn" class="clients-header__btn back__shedule__btn">
+              <i class="fa-solid fa-arrow-left"></i> Назад
+            </button>
+          </div>
         </div>
 
         <div class="clients-main">
@@ -2883,6 +3142,10 @@ function getRegularLessonsPageTemplate() {
 
 function bindRegularLessonsPageEvents() {
   document
+    .getElementById("backToScheduleBtn")
+    ?.addEventListener("click", restoreSchedulePage);
+
+  document
     .getElementById("addRegularLessonBtn")
     ?.addEventListener("click", openRegularLessonForm);
 
@@ -2909,6 +3172,22 @@ function bindRegularLessonsPageEvents() {
         renderRegularLessonsTable();
       });
     });
+}
+
+function restoreSchedulePage() {
+  const schedule = document.getElementById("schedulePage");
+  const regular = document.getElementById("regularLessonsPage");
+
+  if (!schedule || !regular) return;
+
+  // показываем расписание
+  schedule.style.display = "block";
+
+  // скрываем regular lessons
+  regular.style.display = "none";
+
+  // можно очистить, чтобы не жрало память
+  regular.innerHTML = "";
 }
 
 async function fetchRegularLessons() {
@@ -3099,17 +3378,6 @@ function openSelectedRegularLessonForEdit() {
   openRegularLessonForm(selectedId);
 }
 
-// function updateRegularLessonEditButtonState() {
-//   const checked = document.querySelectorAll(
-//     "#regularLessonsTableBody .regular-lessons-row__checkbox:checked",
-//   );
-
-//   const editBtn = document.getElementById("editRegularLessonBtn");
-//   if (!editBtn) return;
-
-//   editBtn.disabled = checked.length !== 1;
-// }
-
 function resetRegularLessonFormState() {
   regularLessonFormState = {
     cabinets: [],
@@ -3281,62 +3549,6 @@ function renderRegularLessonForm() {
     </div>
   `;
 }
-
-// function initRegularLessonSubjectSearch(subjects) {
-//   const input = document.getElementById("regularLessonSubjectSearch");
-//   const dropdown = document.getElementById("regularLessonSubjectDropdown");
-//   const hidden = document.getElementById("regularLessonSubjectId");
-//   alert("второй");
-
-//   if (input) {
-//     input.addEventListener("input", runRegularLessonSubjectSearch);
-//   }
-
-//   input.addEventListener("input", () => {
-//     const value = input.value.trim().toLowerCase();
-
-//     dropdown.innerHTML = "";
-
-//     if (!value) {
-//       dropdown.hidden = true;
-//       hidden.value = "";
-//       return;
-//     }
-
-//     const filtered = subjects.filter((s) =>
-//       s.name.toLowerCase().includes(value),
-//     );
-
-//     if (!filtered.length) {
-//       dropdown.innerHTML = `<div class="regular-lesson-search-dropdown__empty">Ничего не найдено</div>`;
-//       dropdown.hidden = false;
-//       return;
-//     }
-
-//     filtered.forEach((subject) => {
-//       const btn = document.createElement("button");
-//       btn.type = "button";
-//       btn.className = "regular-lesson-search-dropdown__item";
-//       btn.textContent = subject.name;
-
-//       btn.onclick = () => {
-//         input.value = subject.name;
-//         hidden.value = subject.id;
-//         dropdown.hidden = true;
-//       };
-
-//       dropdown.appendChild(btn);
-//     });
-
-//     dropdown.hidden = false;
-//   });
-
-//   document.addEventListener("click", (e) => {
-//     if (!input.contains(e.target) && !dropdown.contains(e.target)) {
-//       dropdown.hidden = true;
-//     }
-//   });
-// }
 
 function bindRegularLessonFormEvents() {
   document

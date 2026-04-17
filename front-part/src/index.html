@@ -173,6 +173,12 @@
                 placeholder="Фильтр по названию"
               />
               <button class="settings-part__subjects__btn">+ Добавить</button>
+              <button
+                id="importSubjectBtn"
+                class="settings-part__subjects__btn import__subject_btn"
+              >
+                <i class="fa-solid fa-file-import"></i> Импорт
+              </button>
             </div>
 
             <div id="subjectsList" class="settings-part__subjects__list"></div>
@@ -478,7 +484,7 @@
         class="main-content main-content__active"
         data-target="lessons"
       >
-        <div class="clients">
+        <div id="schedulePage" class="clients">
           <div class="clients-header">
             <div class="clients-header__left">
               <button id="addLesson" class="clients-header__btn add__btn">
@@ -500,7 +506,10 @@
               </button>
             </div>
             <div class="clients-header__right">
-              <button id="filterLessonsBtn" class="clients-header__btn filter__btn">
+              <button
+                id="filterLessonsBtn"
+                class="clients-header__btn filter__btn"
+              >
                 <i class="fa-solid fa-filter"></i> Фильтр
               </button>
             </div>
@@ -529,6 +538,7 @@
             </div>
           </div>
         </div>
+        <div id="regularLessonsPage" style="display: none"></div>
       </div>
       <div id="crm-part" class="main-content" data-target="CRM">
         <div class="clients">
@@ -562,5 +572,6 @@
     </section>
     <script type="module" src="./js/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
   </body>
 </html>
