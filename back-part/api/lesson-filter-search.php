@@ -18,8 +18,7 @@ try {
     $pdo = new PDO(
         "mysql:host={$config['host']};dbname={$config['dbname']};charset=utf8mb4",
         $config['username'],
-        $config['password'] ?? '',
-        $config['options'] ?? []
+        $config['password'] ?? ''
     );
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
@@ -105,12 +104,56 @@ try {
     ]);
     $teachers = $teachersStmt->fetchAll(PDO::FETCH_ASSOC);
 
+    $contractsStmt = $pdo->prepare("
+        SELECT DISTINCT l.LESSON_CONTRACT as contract
+        FROM lessons l
+        LEFT JOIN cabinets c ON c.id = l.LESSON_CABINET
+        WHERE c.branch = :branch
+        AND l.LESSON_CONTRACT LIKE :query
+        AND l.LESSON_CONTRACT != ''
+        LIMIT 10
+    ");
+    $contractsStmt->execute([
+        ':branch' => $branch,
+        ':query' => "%$query%"
+    ]);
+
+    $contracts = array_map(function ($row) {
+        return [
+            'id' => $row['contract'],
+            'contract' => $row['contract']
+        ];
+    }, $contractsStmt->fetchAll(PDO::FETCH_ASSOC));
+
+    $commentsStmt = $pdo->prepare("
+        SELECT DISTINCT l.LESSON_COMMENT as comment
+        FROM lessons l
+        LEFT JOIN cabinets c ON c.id = l.LESSON_CABINET
+        WHERE c.branch = :branch
+        AND l.LESSON_COMMENT LIKE :query
+        AND l.LESSON_COMMENT != ''
+        LIMIT 10
+    ");
+    $commentsStmt->execute([
+        ':branch' => $branch,
+        ':query' => "%$query%"
+    ]);
+
+    $comments = array_map(function ($row) {
+        return [
+            'id' => md5($row['comment']),
+            'comment' => $row['comment']
+        ];
+    }, $commentsStmt->fetchAll(PDO::FETCH_ASSOC));
+
     echo json_encode([
         'success' => true,
         'data' => [
             'subjects' => $subjects,
             'clients' => $clients,
-            'teachers' => $teachers
+            'teachers' => $teachers,
+            'contracts' => $contracts,
+            'comments' => $comments
         ]
     ], JSON_UNESCAPED_UNICODE);
 

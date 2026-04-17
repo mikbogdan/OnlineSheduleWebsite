@@ -1,5 +1,5 @@
 <?php
-// header('Access-Control-Allow-Origin: http://localhost:1234');
+header('Access-Control-Allow-Origin: http://localhost:1234');
 header('Access-Control-Allow-Credentials: true');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type');
@@ -15,10 +15,9 @@ $config = require '../config/db.php';
 
 try {
     $pdo = new PDO(
-        "mysql:host={$config['host']};dbname={$config['dbname']};charset={$config['charset']}",
+        "mysql:host={$config['host']};dbname={$config['dbname']};charset=utf8mb4",
         $config['username'],
-        $config['password'] ?? '',
-        $config['options'] ?? []
+        $config['password'] ?? ''
     );
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
@@ -61,7 +60,7 @@ try {
         }
 
         // Запрос
-        $sql = "SELECT id, full_name, avatar, sex, DOB, contacts, description, branches 
+        $sql = "SELECT id, full_name 
                 FROM teachers 
                 WHERE " . implode(" AND ", $where) . " 
                 ORDER BY id
@@ -89,6 +88,9 @@ try {
     // ─────── POST — добавление педагога ───────
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $input = json_decode(file_get_contents('php://input'), true);
+
+        // Логируем, что пришло (временно — потом уберёшь)
+        file_put_contents('debug.log', date('Y-m-d H:i:s') . " POST data: " . print_r($input, true) . PHP_EOL, FILE_APPEND);
 
         if (empty($input['full_name'])) {
             echo json_encode(['success' => false, 'message' => 'ФИО обязательно']);

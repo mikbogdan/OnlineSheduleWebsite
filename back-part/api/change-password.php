@@ -1,5 +1,5 @@
 <?php
-// header('Access-Control-Allow-Origin: http://localhost:1234');
+header('Access-Control-Allow-Origin: http://localhost:1234');
 header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
@@ -12,12 +12,8 @@ if (!isset($_SESSION['user_id'])) {
 
 $config = require '../config/db.php';
 
-$pdo = new PDO(
-        "mysql:host={$config['host']};dbname={$config['dbname']};charset={$config['charset']}",
-        $config['username'],
-        $config['password'] ?? '',
-        $config['options'] ?? []
-    );
+$pdo = new PDO("mysql:host={$config['host']};dbname={$config['dbname']};charset=utf8mb4", $config['username'],
+        $config['password'] ?? '');
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 $old_password = $_POST['old_password'] ?? '';

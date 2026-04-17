@@ -1,6 +1,6 @@
 <?php
 // update-user.php
-// header('Access-Control-Allow-Origin: http://localhost:1234');
+header('Access-Control-Allow-Origin: http://localhost:1234');
 header('Access-Control-Allow-Credentials: true');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type');
@@ -24,12 +24,8 @@ if (!$user_id) {
 
 $config = require '../config/db.php';
 
-$pdo = new PDO(
-        "mysql:host={$config['host']};dbname={$config['dbname']};charset={$config['charset']}",
-        $config['username'],
-        $config['password'] ?? '',
-        $config['options'] ?? []
-    );
+$pdo = new PDO("mysql:host={$config['host']};dbname={$config['dbname']};charset=utf8mb4", $config['username'],
+        $config['password'] ?? '');
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 $stmt = $pdo->prepare("UPDATE users SET role = :role, branches = :branches, t_id = :teacher_id WHERE user_id = :id");
